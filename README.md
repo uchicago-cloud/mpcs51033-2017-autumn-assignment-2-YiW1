@@ -18,29 +18,38 @@ API
 
 ### Get a json list of most recent submitted pictures ###
 ```
-http://--.appspot.com/user/<USERNAME>/json/
+http://--.appspot.com/user/<USERNAME>/json/?id_token=XXXX
 ```
 Example
 ```
-curl -X GET https://mpcs51033-2017-autumn-photos.appspot.com/user/default/json/
+curl -X GET https://mpcs51033-2017-autumn-photos.appspot.com/user/default/json/?id_token=XXXX
 ```
 
 ### See a list of the most recent on a web page (useful for debugging) ####
 ```
-http://--.appspot.com/user/<USERNAME>/web/
+http://--.appspot.com/user/<USERNAME>/web/?id_token=XXXX
 ```
 Example
 ```
- curl -X GET https://mpcs51033-2017-autumn-photos.appspot.com/user/andrew/json/
+ curl -X GET https://mpcs51033-2017-autumn-photos.appspot.com/user/andrew/web/?id_token=XXXX
 ```
 
 ### Endpoint for posting images to server. There is an optional "caption" parameter that you can use. ###
 ```
-http://--.appspot.com/user/<USERNAME>/post/
+http://--.appspot.com/user/<USERNAME>/post/?id_token=XXXX
 ```
 Example
 ```
-curl -X POST -H "Content-Type: multipart/form-data" -F caption='curl' -F "image=@IMG_0255.jpg" https://mpcs51033-2017-autumn-photos.appspot.com/post/lolakitty/
+curl -X POST -H "Content-Type: multipart/form-data" -F caption='curl' -F "image=@IMG_0255.jpg" https://mpcs51033-2017-autumn-photos.appspot.com/post/lolakitty/?id_token=XXXX
+```
+
+### Delete a certain photo. ###
+```
+http://--.appspot.com//image/<IMAGE-KEY>/delete//?id_token=XXXX
+```
+Example
+```
+
 ```
 
 ~~~
