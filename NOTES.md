@@ -18,7 +18,6 @@ curl -X GET http://localhost:8080/user/authenticate/?username=<USERNAME>&passwor
 for a list of the most recent
 ```
 curl -X GET http://localhost:8080/user/<USERNAME>/web/?id_token=XXXX
-```
 curl -X GET http://localhost:8080/user/<USERNAME>/json/?id_token=XXXX
 ```
 
