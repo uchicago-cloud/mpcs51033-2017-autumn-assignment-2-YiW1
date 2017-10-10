@@ -49,7 +49,6 @@ curl -X GET http://phototimeline-182520.appspot.com/user/authenticate/?username=
 for a list of the most recent
 ```
 curl -X GET http://phototimeline-182520.appspot.com/user/<USERNAME>/web/?id_token=XXXX
-```
 curl -X GET http://phototimeline-182520.appspot.com/user/<USERNAME>/json/?id_token=XXXX
 ```
 
