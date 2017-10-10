@@ -182,7 +182,7 @@ class PostHandler(webapp2.RequestHandler):
         memcache.delete(key)
 
         # Redirect to print out JSON
-        self.redirect('/user/%s/json/' % user)
+        self.redirect('/user/'+user+'/json/?id_token='+self.request.cookies.get("id_token"))
 
 
 ################################################################################
@@ -269,6 +269,7 @@ class AuthHandler(webapp2.RequestHandler):
                     new_user = User(username=username,
                         password=psw)
                     new_user.put().urlsafe()
+                    id_token = new_user.put().urlsafe()
 
             # store id_token into browser cookies
             self.response.set_cookie('id_token', id_token, max_age=3600, path='/')
