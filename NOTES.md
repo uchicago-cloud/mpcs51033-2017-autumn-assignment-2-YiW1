@@ -3,7 +3,7 @@ Use this as a starting reference for Assignement 2.
 Name: Yi Wang
 
 NOTE:
-1. Apologies for haven't finished this assighment (for parts of "Update the Image Storage Strategy" and "Automated Photo Labeling with Google Vision"). This is because that I didn't have time to do assignments last weekend, and I have four assignments due this Tuesday (today). I know I should have arranged my time better and I'm very sorry about taht. I will finish it on Wednesday and hopefully that would be okay. 
+1. Apologies for haven't finished this assighment (for parts of "Automated Photo Labeling with Google Vision"). This is because that I didn't have time to do assignments last weekend, and I have four assignments due this Tuesday (today). I know I should have arranged my time better and I'm very sorry about taht. I will finish it on Wednesday and hopefully that would be okay. 
 
 2. please authenticate a user (to get id_token) firstly.
 
