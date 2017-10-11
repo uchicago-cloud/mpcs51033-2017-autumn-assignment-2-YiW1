@@ -8,6 +8,7 @@ class Photo(ndb.Model):
     b_key = ndb.StringProperty()
     caption = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
+    labels = ndb.StringProperty(repeated=True)
 
     @classmethod
     def query_user(cls, ancestor_key):
@@ -58,6 +59,7 @@ class User(ndb.Model):
 
     @classmethod
     def auth_user(cls, username, id_token):
+        """Return if the username and id_token match to the same user"""
         if ndb.Key(urlsafe=id_token).get():
             user = ndb.Key(urlsafe=id_token).get()
             if user.username == username:
