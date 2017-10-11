@@ -10,6 +10,8 @@ import urlparse
 from google.appengine.api import memcache
 from google.appengine.ext import ndb
 from google.appengine.api import images
+from google.appengine.ext import blobstore
+import lib.cloudstorage as gcs
 
 from models import *
 
@@ -66,9 +68,9 @@ class UserHandler(webapp2.RequestHandler):
                 #photos = Photo.query_user(ancestor_key).fetch(100)
                 photos = self.get_data(user)
                 if type == "json":
-                    output = self.json_results(photos)
+                    output = self.json_results(photos, user)
                 else:
-                    output = self.web_results(photos)
+                    output = self.web_results(photos, user)
                 self.response.out.write(output)
             else: 
                 self.response.out.write("401 No Authorization \r\n") 
@@ -77,23 +79,24 @@ class UserHandler(webapp2.RequestHandler):
             self.response.out.write("401 No Authorization \r\n") 
             self.response.set_status(401)
 
-    def json_results(self,photos):
+    def json_results(self,photos,user):
         """Return formatted json from the datastore query"""
         json_array = []
         for photo in photos:
             dict = {}
             dict['image_url'] = "image/" + photo.key.urlsafe() + "/?id_token=" + self.request.cookies.get("id_token")
             dict['caption'] = photo.caption
+            dict['user'] = user
             dict['date'] = str(photo.date)
             json_array.append(dict)
         return json.dumps({'results' : json_array})
 
-    def web_results(self,photos):
+    def web_results(self,photos,user):
         """Return html formatted json from the datastore query"""
         html = ""
         for photo in photos:
             html += '<div><hr><div><img src="/image/%s/" width="200" border="1"/></div>' % photo.key.urlsafe()
-            html += '<div><blockquote>Caption: %s<br>User: %s<br>Date:%s</blockquote></div></div>' % (cgi.escape(photo.caption),photo.user,str(photo.date))
+            html += '<div><blockquote>Caption: %s<br>User: %s<br>Date:%s</blockquote></div></div>' % (cgi.escape(photo.caption),user,str(photo.date))
         return html
 
     @staticmethod
@@ -166,11 +169,19 @@ class PostHandler(webapp2.RequestHandler):
         photo = Photo(parent=ndb.Key("User", user),
                 # user=user,
                 caption=self.request.get('caption'),
-                image=thumbnail)
+                # image=thumbnail
+                )
         photo_key = photo.put()
 
         # Store the image into Google Cloud Storage
-
+        bucket = 'phototimeline'
+        nameofFile = photo_key.urlsafe()
+        fileName='/'+bucket+'/'+nameofFile
+        blob_key = self.CreateFile(fileName,thumbnail)
+        # imageUrl = 'https://%(bucket)s.storage.googleapis.com/%(file)s' % {'bucket':bucket, 'file':nameofFile}
+        p = photo_key.get()
+        p.b_key = blob_key
+        p.put()
 
         # Store the image key into the corresponding user entity
         the_user = User.query(User.username == user).get()
@@ -183,6 +194,15 @@ class PostHandler(webapp2.RequestHandler):
 
         # Redirect to print out JSON
         self.redirect('/user/'+user+'/json/?id_token='+self.request.cookies.get("id_token"))
+
+    @staticmethod
+    def CreateFile(filename,imageFile):
+        with gcs.open(filename, 'w', content_type = 'image/jpeg') as f:
+            f.write(imageFile)
+            f.close()
+
+        blobstore_filename = '/gs' + filename
+        return blobstore.create_gs_key(blobstore_filename)
 
 
 ################################################################################
@@ -208,7 +228,7 @@ class LoggingHandler(webapp2.RequestHandler):
 """Delete a photo"""
 class DeleteHandler(webapp2.RequestHandler):
 
-    def post(self, key):
+    def get(self, key):
 
         photo_key = ndb.Key(urlsafe=key)
 
@@ -221,7 +241,7 @@ class DeleteHandler(webapp2.RequestHandler):
             if User.auth_photo_user(key, id_token):
                 
                 # Delete from storage
-
+                blobstore.delete(photo_key.get().b_key)
 
                 # Remove record from the corresponding user entity
                 User.delete_photo(photo_key, id_token)

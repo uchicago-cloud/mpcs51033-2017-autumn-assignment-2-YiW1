@@ -4,7 +4,8 @@ class Photo(ndb.Model):
     """Models a user uploaded photo entry"""
 
     # user = ndb.StringProperty()
-    image = ndb.BlobProperty()
+    # image = ndb.BlobProperty()
+    b_key = ndb.StringProperty()
     caption = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -29,8 +30,7 @@ class User(ndb.Model):
 
     name = ndb.StringProperty()
     email = ndb.StringProperty()
-    unique_id = ndb.StringProperty()
-    # unique_id = ndb.ComputedProperty(uuid)
+    # unique_id = ndb.StringProperty()
     photos = ndb.KeyProperty(kind='Photo', repeated=True)
     username = ndb.StringProperty()
     password = ndb.StringProperty()
@@ -39,10 +39,13 @@ class User(ndb.Model):
     @classmethod
     def delete_photo(cls, photo_key, id_token):
         """Delete photo for a given user"""
-        photos = ndb.Key(urlsafe=id_token).get().photos
+        user = ndb.Key(urlsafe=id_token).get()
+        photos = user.photos
         for photo in photos:
-            if photo.urlsafe() == photo_key:
+            if photo.urlsafe() == photo_key.urlsafe():
                 photos.remove(photo)
+        user.photos = photos
+        user.put()
 
     @classmethod
     def auth_photo_user(cls, photo_key, id_token):
