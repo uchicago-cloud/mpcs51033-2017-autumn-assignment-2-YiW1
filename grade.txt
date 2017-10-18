@@ -1,0 +1,48 @@
+Assignment 2
+============
+
+[x] Add a `User` model
+[x] Change image storage strategy
+[x] Add authentication
+  [x] Add authentication API
+  [x] Update API calls to pass token
+
+[x] Add delete photo API
+[x] Photo labeling with Google Vision
+
+Nice work on this assignment.  Everything was very clearly implemented.
+
+There was a small issue when trying to work with images that I found.  You were
+not passing the `id_token` when requesting an image so they weren't being able
+to be loaded.  This prevented showing them in the browser and for sending to the
+Vision API.
+
+I changed them to look this this:
+```
+http://localhost:8080/image/aghkZXZ-Tm9uZXIdCxIEVXNlciIBYQwLEgVQaG90bxiAgICAgNC7Cgw/?id_token=aghkZXZ-Tm9uZXILCxIEVXNlciIBYQw
+```
+Once I did this, everything worked as it should have.
+
+
+Nice work storing the `id_token` as a cookie for the web front end.  This made
+testing it easier...and would be easier for end users, too.
+
+Grade: 10/10
+
+
+
+~~~
+My Testing Notes (Ignore)
+-------------------------
+
+> curl http://localhost:8080/user/authenticate/?username=a&password=b
+{"results": [{"username": "a", "id_token": "aghkZXZ-Tm9uZXILCxIEVXNlciIBYQw"}]}
+
+> curl -X GET http://localhost:8080/user/a/json/?id_token=aghkZXZ-Tm9uZXILCxIEVXNlciIBYQw
+{"results": [{"date": "2017-10-17 16:25:37.187240", "caption": "caption", "image_url": "image/aghkZ
+
+XZ-Tm9uZXIdCxIEVXNlciIBYQwLEgVQaG90bxiAgICAgMCvCgw/?id_token=aghkZXZ-Tm9uZXILCxIEVXNlciIBYQw", "use
+r": "a"}]}
+
+
+curl -v -X POST -H "Content-Type: multipart/form-data" -F caption=caption -F "image=@image.jpg" http://localhost:8080/post/a/?id_token=aghkZXZ-Tm9uZXILCxIEVXNlciIBYQw

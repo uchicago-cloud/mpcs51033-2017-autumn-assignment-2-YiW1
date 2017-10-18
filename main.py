@@ -33,7 +33,7 @@ class HomeHandler(webapp2.RequestHandler):
             if id_token == None:
                 self.response.write('Please authenticate first, using url "/user/authenticate/?username={USERNAME}&password={PASSWORD}".')
 
-            else: 
+            else:
                 self.response.out.write('<html><body>')
 
                 # Print out some stats on caching
@@ -85,11 +85,11 @@ class UserHandler(webapp2.RequestHandler):
                 else:
                     output = self.web_results(photos, user)
                 self.response.out.write(output)
-            else: 
-                self.response.out.write("401 No Authorization \r\n") 
+            else:
+                self.response.out.write("401 No Authorization \r\n")
                 self.response.set_status(401)
-        else: 
-            self.response.out.write("401 No Authorization \r\n") 
+        else:
+            self.response.out.write("401 No Authorization \r\n")
             self.response.set_status(401)
 
     def json_results(self,photos,user):
@@ -157,10 +157,10 @@ class ImageHandler(webapp2.RequestHandler):
                 else:
                     self.response.out.write("No image")
             else:
-                self.response.out.write("401 No Authorization \r\n") 
+                self.response.out.write("401 No Authorization \r\n")
                 self.response.set_status(401)
         else:
-            self.response.out.write("401 No Authorization \r\n") 
+            self.response.out.write("401 No Authorization \r\n")
             self.response.set_status(401)
 
 
@@ -216,7 +216,7 @@ class PostHandler(webapp2.RequestHandler):
                 task = taskqueue.add(
                     url='/label_task',
                     params={
-                        'photo_key': nameofFile, 
+                        'photo_key': nameofFile,
                     })
 
                 # Clear the cache (the cached version is going to be outdated)
@@ -227,10 +227,10 @@ class PostHandler(webapp2.RequestHandler):
                 self.redirect('/user/'+user+'/json/?id_token='+id_token)
 
             else:
-                self.response.out.write("401 No Authorization \r\n") 
+                self.response.out.write("401 No Authorization \r\n")
                 self.response.set_status(401)
         else:
-            self.response.out.write("401 No Authorization \r\n") 
+            self.response.out.write("401 No Authorization \r\n")
             self.response.set_status(401)
 
     @staticmethod
@@ -278,7 +278,7 @@ class DeleteHandler(webapp2.RequestHandler):
             id_token = query['id_token'][0]
             if User.auth_photo_user(key, id_token):
                 self.response.set_cookie('id_token', id_token, max_age=3600, path='/')
-                
+
                 # Delete from storage
                 blobstore.delete(photo_key.get().b_key)
                 # Remove record from the corresponding user entity
@@ -287,11 +287,11 @@ class DeleteHandler(webapp2.RequestHandler):
                 photo_key.delete()
 
                 self.response.out.write("Successfully deleted. \r\n")
-            else: 
-                self.response.out.write("401 No Authorization \r\n") 
+            else:
+                self.response.out.write("401 No Authorization \r\n")
                 self.response.set_status(401)
-        else: 
-            self.response.out.write("401 No Authorization \r\n") 
+        else:
+            self.response.out.write("401 No Authorization \r\n")
             self.response.set_status(401)
 
 
@@ -368,6 +368,7 @@ class LabelTaskHandler(webapp2.RequestHandler):
         # response = requests.post(url = url, data = json.dumps(data))
         content = urlfetch.fetch(url=url, payload=json.dumps(data), headers={"Content-Type": "application/json"}, method=urlfetch.POST).content
         response = json.loads(content)['responses']
+        logging.info(response)
         label_annos = response[0]['labelAnnotations'][0:3]
 
         # update photo entity in datastore to add labels
